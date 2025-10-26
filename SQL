@@ -127,3 +127,35 @@ ORDER BY total_employees DESC;
 SELECT educationfield, COUNT(employeecount) AS education_field_distribution FROM hrtable2
 GROUP BY educationfield
 ORDER BY education_field_distribution DESC;
+
+SELECT ROUND(AVG(monthly_income), 2) AS monthly_income_avg
+FROM hrtable2;
+
+SELECT marital_status, COUNT(marital_status)
+FROM hrtable2
+GROUP BY marital_status;
+
+SELECT ROUND(AVG(years_since_last_promotion), 2) AS years_since_last_promotion_avg  FROM hrtable2;
+
+SELECT job_level, ROUND(AVG(monthly_income), 2) AS avg_income
+FROM hrtable2
+GROUP BY job_level;
+
+SELECT ROUND(AVG(environment_satisfaction),2) AS env_satis_avg
+FROM hrtable2;
+
+SELECT ROUND(AVG(environment_satisfaction),2) AS env_satis_avg
+FROM hrtable2;
+
+SELECT years_since_last_promotion, ROUND(AVG(monthly_income), 2) AS monthly_income_avg
+FROM hrtable2
+GROUP BY years_since_last_promotion
+ORDER BY monthly_income_avg;
+
+SELECT overtime, ROUND(AVG(performance_rating), 2) AS performance_avg
+FROM hrtable2
+GROUP BY overtime
+ORDER BY performance_avg;
+SELECT educationfield, COUNT(employeecount) AS education_field_distribution FROM hrtable2
+GROUP BY educationfield
+ORDER BY education_field_distribution DESC;
