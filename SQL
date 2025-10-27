@@ -1,34 +1,77 @@
+/*
+=========================================================
+ Project: HR Analytics SQL Queries
+ Author: Omar
+ Database: PostgreSQL
+ Description:
+   This SQL script performs analytical queries on the HR dataset
+   (table: hrtable2). It explores attrition, performance, income,
+   job satisfaction, and demographic distributions used in Power BI.
+=========================================================
+*/
+
+-- =========================================
+-- 📊 INCOME ANALYSIS
+-- =========================================
 SELECT gender,
        ROUND(AVG(monthly_income), 2) AS monthly_income_avg
 FROM hrtable2
 GROUP BY gender
 ORDER BY monthly_income_avg DESC;
 
-WITH new_day AS (
-  SELECT age, distancefromhome, education, job_level, job_satisfaction, years_at_kompany, department
-  FROM hrtable2
-)
-SELECT department,
-       ROUND(AVG(job_satisfaction), 2) AS job_satisfaction_average
-FROM new_day
-GROUP BY department
-ORDER BY job_satisfaction_average DESC;
-
-SELECT education, ROUND(AVG(monthly_income), 2) AS monthly_income_avg
+SELECT education,
+       ROUND(AVG(monthly_income), 2) AS monthly_income_avg
 FROM hrtable2
 GROUP BY education
 ORDER BY monthly_income_avg DESC;
 
-SELECT COUNT(employeecount) AS total_employees FROM hrtable2;
+SELECT job_level,
+       ROUND(AVG(monthly_income), 2) AS avg_income,
+       ROUND(AVG(years_since_last_promotion), 2) AS avg_promo_wait
+FROM hrtable2
+GROUP BY job_level
+ORDER BY avg_income;
 
-SELECT attrition, COUNT(attrition) AS attrition_rate FROM hrtable2
-GROUP BY attrition;
+SELECT years_since_last_promotion,
+       ROUND(AVG(monthly_income), 2) AS monthly_income_avg
+FROM hrtable2
+GROUP BY years_since_last_promotion
+ORDER BY monthly_income_avg;
 
-SELECT gender, COUNT(gender) AS ratio FROM hrtable2
+SELECT ROUND(AVG(monthly_income), 2) AS monthly_income_avg
+FROM hrtable2;
+
+-- =========================================
+-- 🧍‍♂️ EMPLOYEE COUNT & DEMOGRAPHICS
+-- =========================================
+SELECT COUNT(employeecount) AS total_employees
+FROM hrtable2;
+
+SELECT gender, COUNT(gender) AS ratio
+FROM hrtable2
 GROUP BY gender
 ORDER BY ratio DESC;
 
-SELECT ROUND(AVG(performance_rating), 2) AS performance_rating_avg FROM hrtable2;
+SELECT age, COUNT(employeecount) AS total_employees
+FROM hrtable2
+GROUP BY age
+ORDER BY total_employees DESC;
+
+SELECT educationfield, COUNT(employeecount) AS education_field_distribution
+FROM hrtable2
+GROUP BY educationfield
+ORDER BY education_field_distribution DESC;
+
+SELECT marital_status, COUNT(marital_status) AS marital_status_count
+FROM hrtable2
+GROUP BY marital_status;
+
+-- =========================================
+-- 💼 ATTRITION ANALYSIS
+-- =========================================
+SELECT attrition, COUNT(attrition) AS attrition_rate
+FROM hrtable2
+GROUP BY attrition;
 
 SELECT department,
        ROUND(
@@ -39,9 +82,11 @@ FROM hrtable2
 GROUP BY department
 ORDER BY attrition_rate_percent DESC;
 
-SELECT ROUND(COUNT(*) FILTER (WHERE attrition = 'Yes')::numeric / COUNT(*) * 100, 2) AS overall_attrition_rate
+SELECT ROUND(
+         COUNT(*) FILTER (WHERE attrition = 'Yes')::numeric /
+         COUNT(*) * 100, 2
+       ) AS overall_attrition_rate
 FROM hrtable2;
-
 
 SELECT age,
        ROUND(
@@ -61,6 +106,33 @@ FROM hrtable2
 GROUP BY marital_status
 ORDER BY attrition_rate_percent DESC;
 
+-- =========================================
+-- 😀 JOB SATISFACTION ANALYSIS
+-- =========================================
+WITH new_day AS (
+  SELECT age, distancefromhome, education, job_level, job_satisfaction, years_at_kompany, department
+  FROM hrtable2
+)
+SELECT department,
+       ROUND(AVG(job_satisfaction), 2) AS job_satisfaction_average
+FROM new_day
+GROUP BY department
+ORDER BY job_satisfaction_average DESC;
+
+SELECT department,
+       ROUND(AVG(job_satisfaction), 2) AS job_satisfaction_avg
+FROM hrtable2
+GROUP BY department
+ORDER BY job_satisfaction_avg;
+
+SELECT overtime,
+       ROUND(AVG(job_satisfaction), 2) AS job_satisfaction_avg
+FROM hrtable2
+GROUP BY overtime;
+
+-- =========================================
+-- 🌿 ENVIRONMENT SATISFACTION ANALYSIS
+-- =========================================
 SELECT attrition,
        ROUND(AVG(environment_satisfaction), 2) AS environment_satisfaction_avg,
        COUNT(*) AS employee_count
@@ -68,94 +140,58 @@ FROM hrtable2
 GROUP BY attrition
 ORDER BY environment_satisfaction_avg DESC;
 
+SELECT ROUND(AVG(environment_satisfaction), 2) AS env_satis_avg
+FROM hrtable2;
 
+-- =========================================
+-- 🧠 PERFORMANCE & TRAINING ANALYSIS
+-- =========================================
+SELECT ROUND(AVG(performance_rating), 2) AS performance_rating_avg
+FROM hrtable2;
 
-SELECT performance_rating, ROUND(AVG(monthly_income), 2) AS monthly_income_average  FROM hrtable2
+SELECT performance_rating,
+       ROUND(AVG(monthly_income), 2) AS monthly_income_average
+FROM hrtable2
 GROUP BY performance_rating
 ORDER BY monthly_income_average;
 
-SELECT job_level, ROUND(AVG(monthly_income), 2) AS avg_income, ROUND(AVG(years_since_last_promotion), 2) AS avg_promo_wait
+SELECT environment_satisfaction,
+       ROUND(AVG(performance_rating), 2) AS performance_rating_avg
 FROM hrtable2
-GROUP BY job_level
-ORDER BY avg_income;
-
-SELECT department, ROUND(AVG(job_satisfaction), 2) AS job_satisfaction_avg
-FROM hrtable2
-GROUP BY department
-ORDER BY job_satisfaction_avg;
-
-SELECT overtime, ROUND(AVG(job_satisfaction), 2) AS job_satisfaction_avg
-FROM hrtable2
-GROUP BY overtime;
-
-SELECT environment_satisfaction, ROUND(AVG(performance_rating), 2) AS performance_rating_avg
-FROM hrtable2 
 GROUP BY environment_satisfaction
 ORDER BY environment_satisfaction;
 
-SELECT job_role, ROUND(AVG(performance_rating), 2) AS performance_rating_avg
-FROM hrtable2 
-GROUP BY job_role
-ORDER BY performance_rating_avg DESC;
-
-SELECT training_times_last_year, ROUND(AVG(performance_rating), 2) AS performance_rating_avg
-FROM hrtable2 
-GROUP BY training_times_last_year
-ORDER BY performance_rating_avg DESC;
-
-SELECT education AS education_level, ROUND(AVG(performance_rating), 2) AS performance_rating_avg
-FROM hrtable2 
-GROUP BY education_level
-ORDER BY performance_rating_avg DESC;
-
-SELECT job_role, ROUND(AVG(performance_rating), 2) AS performance_rating_avg
-FROM hrtable2 
+SELECT job_role,
+       ROUND(AVG(performance_rating), 2) AS performance_rating_avg
+FROM hrtable2
 GROUP BY job_role
 ORDER BY performance_rating_avg DESC
 LIMIT 3;
 
-SELECT department, ROUND(COUNT(*) FILTER (WHERE gender = 'Male')::numeric / COUNT(*) * 100, 2) AS male_percent,
-ROUND(COUNT(*) FILTER (WHERE gender = 'Female')::numeric / COUNT(*) * 100, 2) AS female_percent
+SELECT training_times_last_year,
+       ROUND(AVG(performance_rating), 2) AS performance_rating_avg
 FROM hrtable2
-GROUP BY department
-ORDER BY male_percent DESC;
+GROUP BY training_times_last_year
+ORDER BY performance_rating_avg DESC;
 
-SELECT age, COUNT(employeecount) AS total_employees FROM hrtable2
-GROUP BY age
-ORDER BY total_employees DESC;
-
-SELECT educationfield, COUNT(employeecount) AS education_field_distribution FROM hrtable2
-GROUP BY educationfield
-ORDER BY education_field_distribution DESC;
-
-SELECT ROUND(AVG(monthly_income), 2) AS monthly_income_avg
-FROM hrtable2;
-
-SELECT marital_status, COUNT(marital_status)
+SELECT education AS education_level,
+       ROUND(AVG(performance_rating), 2) AS performance_rating_avg
 FROM hrtable2
-GROUP BY marital_status;
+GROUP BY education_level
+ORDER BY performance_rating_avg DESC;
 
-SELECT ROUND(AVG(years_since_last_promotion), 2) AS years_since_last_promotion_avg  FROM hrtable2;
-
-SELECT job_level, ROUND(AVG(monthly_income), 2) AS avg_income
-FROM hrtable2
-GROUP BY job_level;
-
-SELECT ROUND(AVG(environment_satisfaction),2) AS env_satis_avg
-FROM hrtable2;
-
-SELECT ROUND(AVG(environment_satisfaction),2) AS env_satis_avg
-FROM hrtable2;
-
-SELECT years_since_last_promotion, ROUND(AVG(monthly_income), 2) AS monthly_income_avg
-FROM hrtable2
-GROUP BY years_since_last_promotion
-ORDER BY monthly_income_avg;
-
-SELECT overtime, ROUND(AVG(performance_rating), 2) AS performance_avg
+SELECT overtime,
+       ROUND(AVG(performance_rating), 2) AS performance_avg
 FROM hrtable2
 GROUP BY overtime
 ORDER BY performance_avg;
-SELECT educationfield, COUNT(employeecount) AS education_field_distribution FROM hrtable2
-GROUP BY educationfield
-ORDER BY education_field_distribution DESC;
+
+-- =========================================
+-- 👩‍💼 GENDER DISTRIBUTION BY DEPARTMENT
+-- =========================================
+SELECT department,
+       ROUND(COUNT(*) FILTER (WHERE gender = 'Male')::numeric / COUNT(*) * 100, 2) AS male_percent,
+       ROUND(COUNT(*) FILTER (WHERE gender = 'Female')::numeric / COUNT(*) * 100, 2) AS female_percent
+FROM hrtable2
+GROUP BY department
+ORDER BY male_percent DESC;
